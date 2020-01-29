@@ -1,0 +1,8 @@
+Overview: 
+https://www.kubeflow.org/docs/fairing/fairing-overview/
+
+Installation: 
+https://www.kubeflow.org/docs/fairing/install-fairing/#set-up-kubeflow-fairing-in-a-hosted-jupyter-notebook
+
+Detailed Documentation of the API:
+https://kubeflow-fairing.readthedocs.io/en/latest/
