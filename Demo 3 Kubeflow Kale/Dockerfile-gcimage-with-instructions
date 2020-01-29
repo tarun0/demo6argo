@@ -1,0 +1,40 @@
+# Dockerfile to created Kale enabled notebook from default - Google's image which is presented in Kubeflow Notebook Server
+# Working Kale installation needs the following:
+# 1. Jupyterlab (already installed on the base notebook used here)
+# 2. Jupter's extension 'kubeflow-kale-launcher'(UI presented in notebook for pipeline metadata)
+# 3. Pip's 'kubeflow-kale' module (actual kale program)
+# 4. Kfp (pipeline sdk) 
+
+## Usage:
+# Make docker container image using this file
+# Upload it to repository - dockerhub
+# From Kubeflow dashboard, create new notebook server and select the custom image just uploaded to docker hub; e.g. username/imagename:tag
+
+FROM gcr.io/kubeflow-images-public/tensorflow-2.0.0a0-notebook-cpu:v0.7.0
+
+# To install software/dependencies
+USER root
+
+# Showed 'rpc not found' error sometimes. Installing to avoid that. 
+RUN apt-get install -y rpcbind
+
+#Jupyter is already installed in this notebook. So, installing extension only
+RUN jupyter labextension install kubeflow-kale-launcher
+
+# Install kale module
+RUN pip3 install kubeflow-kale
+
+#Add Environment variable. Just following the Jupyter Notebook creation tutorial. Doesn't needed as such as directory can be given right in the command
+ENV NB_PREFIX /
+
+# Not mandatory - needed to support arrow keys (other shell will type [D1 kind of values on pressing arrow keys)
+ENV SHELL /bin/bash
+
+# Install kfp (pipeline sdk)
+RUN pip3 install https://storage.googleapis.com/ml-pipeline/release/latest/kfp.tar.gz --upgrade
+
+#Export path so that the relevant command can be found
+RUN export PATH=$PATH:/home/jovyan/.local/bin 
+
+#Start the jupyter lab server
+CMD ["sh", "-c", "jupyter lab --notebook-dir=/home/jovyan --ip=0.0.0.0 --no-browser --allow-root --port=8888 --LabApp.token='' --LabApp.password='' --LabApp.allow_origin='*' --LabApp.base_url=${NB_PREFIX}"]
