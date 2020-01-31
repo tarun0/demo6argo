@@ -12,3 +12,4 @@ https://github.com/kubeflow/fairing/issues/381
 
 Resources:
 https://www.docker.com/blog/docker-can-now-run-within-docker/
+https://stackoverflow.com/questions/27879713/is-it-ok-to-run-docker-from-inside-docker
