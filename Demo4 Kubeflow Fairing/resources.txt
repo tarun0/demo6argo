@@ -6,3 +6,9 @@ https://www.kubeflow.org/docs/fairing/install-fairing/#set-up-kubeflow-fairing-i
 
 Detailed Documentation of the API:
 https://kubeflow-fairing.readthedocs.io/en/latest/
+
+Issues:
+https://github.com/kubeflow/fairing/issues/381
+
+Resources:
+https://www.docker.com/blog/docker-can-now-run-within-docker/
