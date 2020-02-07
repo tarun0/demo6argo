@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: arg-workflow-demo
+spec:
+  entrypoint: demo4
+  volumes: 
+   - name: dir
+     persistentVolumeClaim:
+      claimName: argo-pvc-1 
+
+  templates:
+    - name: demo4
+      dag:
+        tasks:
+        - name : copy-input
+          template: copy-input
+        - name: preparedata
+          dependencies: [copy-input]
+          template: dataload
+        - name: train
+          dependencies: [preparedata]
+          template: trainmodel
+        - name: predict
+          dependencies: [train]
+          template: prediction
+
+    - name: copy-input
+      container:
+        image: tarun0/argo:v1
+        command: [echo, test]
+        args: ["echo container 1 started ; ls -ltr /tmp"]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp    
+    
+    - name: dataload
+      container:
+        image: tarun0/argo:v1
+        command: [python3, /tmp/dataloading.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+
+    - name: trainmodel
+      container:
+        image: tarun0/argo:v1
+        command: [python3, /tmp/training.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+    
+    - name: prediction
+      container: 
+        image: tarun0/argo:v1
+        command: [python3, /tmp/prediction.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp

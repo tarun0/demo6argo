@@ -1,0 +1,76 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: arg-workflow-demo
+spec:
+  entrypoint: validate-image
+  volumes: 
+   - name: dir
+     persistentVolumeClaim:
+      claimName: argo-pvc-1 
+
+  templates:
+    - name: retrain
+      dag:
+        tasks:
+        - name : copy
+          template: copy
+
+        - name : train
+          dependencies: [copy]
+          template: trainmodel
+        
+        - name: predict
+          dependencies: [train]
+          template: prediction
+
+
+    - name: validate-image
+      container:
+        image: tarun0/argo:v1
+        command: [python3, /tmp/check.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: testimage
+      steps:
+        - - name: prediction-rightaway
+            template: prediction
+            when: "{{steps.validate-image.outputs.result}} == predict"
+
+        - - name: train-again
+            template: retrain
+            when: "{{steps.validate-image.outputs.result}} == retrain"        
+    
+    - name: prediction
+      container: 
+        image: tarun0/argo:v1
+        command: [python3, /tmp/prediction.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: testimage
+
+    - name: copy
+      container: 
+        image: tarun0/argo:v1
+        command: [python3, /tmp/copy.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: testimage
+
+    - name: trainmodel
+      container:
+        image: tarun0/argo:v1
+        command: [python3, /tmp/training.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+

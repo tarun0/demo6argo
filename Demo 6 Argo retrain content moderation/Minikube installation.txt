@@ -1,0 +1,63 @@
+Install minikube 
+	curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+  && chmod +x minikube
+	sudo mkdir -p /usr/local/bin/
+	sudo install minikube /usr/local/bin/
+
+Start minikube with two flag vm driver none (we want to deploy kubernetes on our localhost) and kubernetes version v1.15:
+	sudo minikube start --vm-driver none --kubernetes-version v1.15.0
+    If error "Kubectl masked ", unmask kubelet service, delete minikube and install again using above command:
+	sudo systemctl unmask kubelet
+	sudo minikube delete
+	sudo minikube start --vm-driver none --kubernetes-version v1.15.0
+	
+run by a non-root user (Instructions will be provided in the terminal itself) :
+	$ sudo mv /home/<USER>/.kube   /home/<user>/.minikube   $HOME
+	$ sudo chown -R  $USER /home/<user>/.kube   /home/<user>/.minikube
+
+Deploy kubeflow (https://www.kubeflow.org/docs/started/k8s/kfctl-k8s-istio/)
+	kfctl apply -V -f <Path to YAML config file (istio 0.7 as of writing this doc)>
+
+Install kubectl (https://kubernetes.io/docs/tasks/tools/install-kubectl/):
+	curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl
+	chmod +x ./kubectl
+	sudo mv ./kubectl /usr/local/bin/kubectl
+
+========================YAML==========================
+https://www.mirantis.com/blog/introduction-to-yaml-creating-a-kubernetes-deployment/
+
+=========================ARGO=======================
+
+Install Argo Controller and UI (https://argoproj.github.io/docs/argo/demo.html)
+	kubectl create namespace argo
+	kubectl apply -n argo -f https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml
+   Install Argo CLI:
+	# Download the binary
+	curl -sLO https://github.com/argoproj/argo/releases/download/v2.4.3/argo-linux-amd64
+	# Make binary executable
+	chmod +x argo-linux-amd64
+	# Move binary to path
+	mv ./argo-linux-amd64 /usr/local/bin/argo
+	# Test installation
+	argo version
+   Prepare dashboard for Argo UI:
+	Edit service by command:
+	    sudo kubectl edit service/argo-ui -n argo
+	    Change service type from ClusterIP to NodePort
+        Dashboard can be found at localhost:<PORT> Port can be found by sudo kubectl get all -n argo
+
+
+========================ARGO TUTORIAL/SAMPLE===================
+https://itnext.io/argo-workflow-engine-for-kubernetes-7ae81eda1cc5
+https://www.youtube.com/watch?v=oXPgX7G_eow
+https://github.com/argoproj/argo/blob/master/examples/dag-targets.yaml
+https://github.com/argoproj/argo/blob/master/examples/dag-diamond.yaml
+https://github.com/argoproj/argo/blob/master/examples
+
+-------Persistent Volume-------
+https://github.com/argoproj/argo/blob/master/examples/volumes-existing.yaml
+https://portworx.com/tutorial-kubernetes-persistent-volumes/
+
+=========================DEMO MODEL FASTAI========================
+https://course.fast.ai/videos/?lesson=2
+https://github.com/fastai/course-v3/blob/master/nbs/dl1/lesson2-download.ipynb
