@@ -28,7 +28,7 @@ https://www.mirantis.com/blog/introduction-to-yaml-creating-a-kubernetes-deploym
 
 =========================ARGO=======================
 
-Install Argo Controller and UI (https://argoproj.github.io/docs/argo/demo.html)
+Install Argo Controller and UI (https://github.com/argoproj/argo/blob/master/docs/getting-started.md)
 	kubectl create namespace argo
 	kubectl apply -n argo -f https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml
    Install Argo CLI:
@@ -45,6 +45,11 @@ Install Argo Controller and UI (https://argoproj.github.io/docs/argo/demo.html)
 	    sudo kubectl edit service/argo-ui -n argo
 	    Change service type from ClusterIP to NodePort
         Dashboard can be found at localhost:<PORT> Port can be found by sudo kubectl get all -n argo
+
+Troubleshooting: 
+   If the error failed to save outputs: verify serviceaccount kubeflow:default has necessary privileges pops,
+        Run: kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=default:default
+        Source: https://github.com/argoproj/argo/issues/1021
 
 
 ========================ARGO TUTORIAL/SAMPLE===================

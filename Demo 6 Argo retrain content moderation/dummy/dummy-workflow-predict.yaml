@@ -1,0 +1,92 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: arg-workflow-demo
+spec:
+  entrypoint: start
+
+  volumes: 
+   - name: dir
+     persistentVolumeClaim:
+      claimName: my-pvc-argo 
+  
+  arguments:
+    parameters:
+    - name: image
+      value: hello.jpg
+
+  templates:
+    - name: retrain
+      dag:
+        tasks:
+        - name : copy
+          template: copy
+
+        - name : train
+          dependencies: [copy]
+          template: trainmodel
+        
+        - name: predict
+          dependencies: [train]
+          template: prediction
+
+
+    - name: start
+      steps:
+        - - name: validate
+            template: validate
+
+        - - name: prediction-rightaway
+            template: prediction
+            when: "{{steps.validate.outputs.parameters.result}} == predict"
+
+        - - name: train-again
+            template: retrain
+            when: "{{steps.validate.outputs.parameters.result}} == retrain"        
+
+    - name: validate
+      container:
+        image: tarun0/argo:v1
+        command: [python3, /tmp/check.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - {name: testimage, value: "test.jpg"}
+      outputs:
+        parameters:
+          - name: result
+            valueFrom:
+              path: /tmp/check-output.txt
+
+    - name: prediction
+      container: 
+        image: tarun0/argo:v1
+        command: [python3, /tmp/prediction.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - {name: testimage, value: "test.jpg"}
+
+    - name: copy
+      container: 
+        image: tarun0/argo:v1
+        command: [python3, /tmp/copy.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - {name: testimage, value: "test.jpg"}
+
+    - name: trainmodel
+      container:
+        image: tarun0/argo:v1
+        command: [python3, /tmp/training.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+
