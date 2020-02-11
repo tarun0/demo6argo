@@ -65,30 +65,36 @@ spec:
     - name: prediction
       container: 
         image: tarun0/argo:v1
-        command: [python3, /tmp/prediction.py]
+        command: [python3, /tmp/prediction1.py, '{{inputs.parameters.testimage}}']
         volumeMounts:
           - name: dir
             mountPath: /tmp
       inputs:
         parameters:
-          - {name: testimage, value: "test.jpg"}
+          - name: testimage
+            value: "abc.jpg"
 
     - name: copy
       container: 
         image: tarun0/argo:v1
-        command: [python3, /tmp/copy.py]
+        command: [python3, /tmp/copy.py, '{{inputs.parameters.testimage}}']
         volumeMounts:
           - name: dir
             mountPath: /tmp
       inputs:
         parameters:
-          - {name: testimage, value: "test.jpg"}
+          - name: testimage
+            value: "abc.jpg"
 
     - name: trainmodel
       container:
         image: tarun0/argo:v1
-        command: [python3, /tmp/training.py]
+        command: [python3, /tmp/training1.py, '{{inputs.parameters.testimage}}']
         volumeMounts:
           - name: dir
             mountPath: /tmp
+      inputs:
+        parameters:
+          - name: testimage
+            value: "abc.jpg"
 
