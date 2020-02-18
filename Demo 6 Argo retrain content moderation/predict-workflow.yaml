@@ -1,0 +1,99 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: arg-workflow-demo
+spec:
+  entrypoint: start
+
+  volumes: 
+   - name: dir
+     persistentVolumeClaim:
+      claimName: my-pvc-argo 
+  
+  arguments:
+    parameters:
+    - name: image
+      value: hello.jpg
+
+  templates:
+    - name: retrain
+      dag:
+        tasks:
+        - name : copy
+          template: copy
+
+        - name : train
+          dependencies: [copy]
+          template: trainagainmodel
+        
+        - name: predict
+          dependencies: [train]
+          template: prediction
+
+
+    - name: start
+      steps:
+        - - name: prediction-first
+            template: prediction
+
+        - - name: validate
+            template: validate
+
+        - - name: train-again
+            template: retrain
+            when: "{{steps.validate.outputs.parameters.result}} == retrain"        
+
+    - name: validate
+      inputs:
+        parameters:
+          - name: image
+            value: "newg.jpg"
+      container:
+        image: omie12/pytorch:1.0
+        command: [python3 ,  /tmp/check.py , '{{inputs.parameters.image}}']
+        #args: ["--image {{inputs.parameters.image}}"]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      outputs:
+        parameters:
+          - name: result
+            valueFrom:
+              path: /tmp/check-output.txt
+
+    - name: prediction
+      container: 
+        image: omie12/pytorch:1.0
+        command: [python3, /tmp/prediction1.py, '{{inputs.parameters.image}}']
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: image
+            value: "newg.jpg"
+
+    - name: copy
+      container: 
+        image: omie12/pytorch:1.0
+        command: [python3, /tmp/copy1.py, '{{inputs.parameters.image}}']
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: image
+            value: "newg.jpg"
+
+    - name: trainagainmodel
+      container:
+        image: omie12/pytorch:1.0
+        command: [python3, /tmp/trainagain.py]
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: path
+            value: '/tmp'
+

@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: arg-workflow-demo
+spec:
+  entrypoint: start
+
+  volumes: 
+   - name: dir
+     persistentVolumeClaim:
+      claimName: my-pvc-argo 
+  
+  arguments:
+    parameters:
+    - name: directory
+      value: '/tmp'
+
+  templates:
+    - name: start
+      dag:
+        tasks:
+        - name : dataload
+          template: dataload
+          
+        - name: train
+          dependencies: [dataload]
+          template: training
+          
+    - name: dataload
+      container:
+        image: omie12/pytorch:1.0
+        command: [python3, /tmp/loading1.py, '{{inputs.parameters.directory}}']
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: directory
+            value: '/tmp'
+
+    - name: training
+      container:
+        image: omie12/pytorch:1.0
+        command: [python3, /tmp/training1.py, '{{inputs.parameters.directory}}']
+        volumeMounts:
+          - name: dir
+            mountPath: /tmp
+      inputs:
+        parameters:
+          - name: directory
+            value: '/tmp'

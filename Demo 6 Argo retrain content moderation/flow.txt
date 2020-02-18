@@ -1,0 +1,106 @@
+==============Loading started=============
+Path provided in arguments. Set to: /tmp
+==============Loading ended=============
+
+==============Training started=============
+Path provided in arguments. Set to: /tmp
+
+Model trained. Saving...
+
+Model Saved!
+
+Model Exported!
+
+==============Training ended=============
+
+
+
+==============Prediction started=============
+Provided file: /tmp/test/newg.jpg
+Content of dir where model will be searched /tmp
+Predictions:
+ guns
+ Outputs:---
+tensor([9.9927e-01, 8.1673e-10, 7.2610e-04])
+
+==============Prediction ended=============
+
+==============Checking started=============
+
+ Checking file (from argument): newg.jpg
+Detected new image: Retrain
+
+==============Checking ended=============
+
+==============Copy started=============
+ Testfile found in arg /tmp/test/newg.jpg
+==============Copy ended=============
+
+==============Training started=============
+Path not provided as argument. Defaulting to: /workspace
+
+==============Prediction started=============
+Provided file: /tmp/test/newg.jpg
+Content of dir where model will be searched /tmp
+Predictions:
+ guns
+ Outputs:---
+tensor([9.9927e-01, 8.1673e-10, 7.2610e-04])
+
+==============Prediction ended=============
+
+==============Checking started=============
+
+ Checking file (from argument): newg.jpg
+Detected new image: Retrain
+
+==============Checking ended=============
+
+==============Copy started=============
+ Testfile found in arg /tmp/test/newg.jpg
+==============Copy ended=============
+
+==============Training started=============
+Path not provided as argument. Defaulting to: /workspace
+
+==============Prediction started=============
+Provided file: /tmp/test/newg.jpg
+Content of dir where model will be searched /tmp
+Predictions:
+ guns
+ Outputs:---
+tensor([9.9927e-01, 8.1673e-10, 7.2610e-04])
+
+==============Prediction ended=============
+
+==============Checking started=============
+
+ Checking file (from argument): newg.jpg
+Detected new image: Retrain
+
+==============Checking ended=============
+
+==============Copy started=============
+ Testfile found in arg /tmp/test/newg.jpg
+==============Copy ended=============
+
+==============Training started=============
+Path not provided as argument. Defaulting to /tmp :  /tmp
+
+Model trained. Saving...
+
+Model Saved!
+
+Model Exported!
+
+==============Training ended=============
+
+==============Prediction started=============
+Provided file: /tmp/test/newg.jpg
+Content of dir where model will be searched /tmp
+Predictions:
+ guns
+ Outputs:---
+tensor([9.9998e-01, 1.1704e-12, 2.0332e-05])
+
+==============Prediction ended=============

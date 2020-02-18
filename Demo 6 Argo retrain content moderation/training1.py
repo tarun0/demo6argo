@@ -1,22 +1,24 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[3]:
-
-
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
-
 from fastai.vision import *
 
-base_path = 'data'
-path = Path(base_path+ '/items')
-print(path.ls())
+import os
+import sys
+import pathlib
 
+flow=open("/tmp/flow.txt", "a")
+flow.write('\n==============Training started=============\n')
 
+path = pathlib.Path(os.getcwd())
+print(sys.argv[-1])
+
+if not sys.argv[-1].endswith('json') and not sys.argv[-1].endswith('py') :
+    path = pathlib.Path(sys.argv[-1])
+    flow.write('Path provided in arguments. Set to: ' + str(path)+ '\n')
+    print('setting to' , path)
+else:
+    print('Path not provided as argument. Defaulting to: ', path)
+    flow.write('Path not provided as argument. Defaulting to: ' + str(path) + '\n')
+
+print(os.listdir(path))
 classes = ['guns','teddys']
 
 np.random.seed(42)
@@ -24,29 +26,20 @@ data = ImageDataBunch.from_folder(path, train=".", valid_pct=0.2,
         ds_tfms=get_transforms(), size=95, num_workers=1).normalize(imagenet_stats)
 
 
-# In[8]:
-
-
 learn = cnn_learner(data, models.resnet34, metrics=error_rate)
 learn.fit_one_cycle(3)
 
-
-# In[9]:
-
+flow.write('\nModel trained. Saving...\n')
 
 learn.save('mymodel')
 
+flow.write('\nModel Saved!\n')
+name = 'final model.pkl'
+learn.export(path/name)
 
-# In[13]:
-
-
-learn.export('final model.pkl')
+flow.write('\nModel Exported!\n')
 
 print("Model exported after training")
 
-
-# In[ ]:
-
-
-
-
+flow.write('\n==============Training ended=============\n')
+flow.close()

@@ -8,17 +8,17 @@ import os
 import shutil
 import sys
 
-testfile = (os.listdir(os.curdir+'/test'))[0]
-sourcefilepath = os.path.join(os.path.abspath(os.curdir+'/test'),testfile)
+testfile = (os.listdir(os.getcwd()+'/test'))[0]
+sourcefilepath = os.path.join(os.path.abspath(os.getcwd()+'/test'),testfile)
 if sys.argv[-1].endswith('jpg'):
     testfile = sys.argv[-1]
-    sourcefilepath = os.path.join(os.path.abspath(os.curdir+'/test'),sys.argv[-1])
+    sourcefilepath = os.path.join(os.path.abspath(os.getcwd()+'/test'),sys.argv[-1])
     print('testfile provided in arguments: ', sourcefilepath)
 else:
-    print('no file provided. trying with default...', os.path.join(os.path.abspath(os.curdir+'/test'),testfile))
+    print('no file provided. trying with default...', os.path.join(os.path.abspath(os.getcwd()+'/test'),testfile))
 
-sourcePathTeddy = os.path.join(os.path.abspath(os.curdir+'/data/items/teddys'),testfile)
-sourcePathGuns = os.path.join(os.path.abspath(os.curdir+'/data/items/guns'),testfile)
+sourcePathTeddy = os.path.join(os.path.abspath(os.getcwd()+'/data/items/teddys'),testfile)
+sourcePathGuns = os.path.join(os.path.abspath(os.getcwd()+'/data/items/guns'),testfile)
 
 if testfile.startswith('newt') and testfile.endswith('jpg'):
         #print('new image file: ' + f)
